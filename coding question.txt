@@ -1,0 +1,86 @@
+/ "Question:
+
+// Given a string with employee id, name and manager id, print out all of them in the tree format.
+// "
+// "Input: "1:Max:4, 4:Ann:0, 2:Jim:4, 3:Tom:1""
+
+// 1 -> employee id
+// Max -> name
+// 4 -> manager id"
+
+// Output
+
+// "Output:
+
+// Ann
+// - Max
+// -- Tom
+// - Jim
+// "
+
+// **/
+
+
+
+const createEmployeeHierarchy = (str) => {
+  
+  const empStrings = str.split(',');
+  
+  const employees = empStrings.map(empString => {
+    const empDetails = empString.trim().split(':');
+    return {
+      id: parseInt(empDetails[0]),
+      name: empDetails[1],
+      mgrId: parseInt(empDetails[2])
+    }
+  })
+  
+  console.log(employees);
+  
+  const newEmployees = employees.filter(emp => emp.mgrId === 0);
+  
+  console.log(newEmployees);
+  
+  employees.filter(emp => emp.mgrId !== 0)
+  .forEach(emp => {
+    console.log('Employee', emp);
+    const employee = findEmployeeRecursively(newEmployees, emp.mgrId);
+    console.log('Parent', employee);
+    if(!employee.children) {
+      employee.children = [];
+    }
+    employee.children.push(emp);
+    console.log('Re-org parent', employee);
+  });
+  
+  return newEmployees;
+  
+}
+
+const findEmployeeRecursively = (employees, id) => {
+  
+  console.log('Employees', employees);
+
+  if (Array.isArray(employees)) {
+   
+    for(let i=0; i < employees.length; i++) {
+      if(employees[i].id === id) {
+        return employees[i];
+      }
+      return findEmployeeRecursively(employees[i].children, id);
+    }
+  }
+  return null;
+}
+
+const printEmployeeRecursively = (arr) => {
+  arr.forEach(emp => {
+    console.log(emp.name);
+    printEmployeeRecursively(emp.children);
+  })
+}
+
+const hierarchy = createEmployeeHierarchy("1:Max:4, 4:Ann:0, 2:Jim:4, 3:Tom:1")
+printEmployeeRecursively(hierarchy)
+
+
